@@ -9,7 +9,21 @@ const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+  log: ['query', 'info', 'warn', 'error'],
+});
+
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET (managed identity)' : 'MISSING');
+console.log('Prisma client initialized');
+
+prisma.$connect()
+  .then(() => console.log('✅ Prisma connected successfully using managed identity'))
+  .catch(err => console.error('❌ Prisma connection failed:', err.message));
 
 // View engine + layouts
 app.set('view engine', 'ejs');
