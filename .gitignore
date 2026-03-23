@@ -15,3 +15,7 @@ yarn.lock             # optional: same as above
 .env.development.local
 .env.test.local
 .env.production.local
+
+public/css/output.css
+prisma/dev.db*
+prisma/migrations/
