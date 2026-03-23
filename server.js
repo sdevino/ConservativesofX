@@ -6,17 +6,21 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { PrismaClient } = require('@prisma/client');
 const path = require('path');
+const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
 const prisma = new PrismaClient();
 
+// View engine + layouts
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.set('layout', 'layout');           // default layout file
+app.use(expressLayouts);
 
+// Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.use(helmet());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
@@ -41,7 +45,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware
+// Auth middleware
 const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) return next();
   res.redirect('/login');
@@ -49,14 +53,12 @@ const ensureAuthenticated = (req, res, next) => {
 
 const ensureAdmin = (req, res, next) => {
   if (req.user?.isAdmin) return next();
-  res.status(403).send('Access denied');
+  res.status(403).render('404', { message: 'Access denied' });
 };
 
 // Routes
 app.get('/', (req, res) => res.render('index'));
-
 app.get('/about', (req, res) => res.render('about'));
-
 app.get('/events', async (req, res) => {
   const events = await prisma.event.findMany({
     orderBy: { dateTime: 'asc' },
@@ -79,16 +81,12 @@ app.get('/community', ensureAuthenticated, async (req, res) => {
 });
 
 app.get('/donate', (req, res) => res.render('donate'));
-
 app.get('/contact', (req, res) => res.render('contact'));
 
-// Auth
+// Auth routes
 app.get('/signup', (req, res) => res.render('signup'));
 app.post('/signup', async (req, res) => {
-  const {
-    firstName, lastName, email, phone, password,
-    dateOfBirth, emailOptIn, smsOptIn
-  } = req.body;
+  const { firstName, lastName, email, phone, password, dateOfBirth, emailOptIn, smsOptIn } = req.body;
 
   if (!password || password.length < 8) {
     return res.status(400).send('Password must be at least 8 characters');
@@ -129,7 +127,6 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// Google OAuth
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', passport.authenticate('google', {
   successRedirect: '/',
@@ -145,19 +142,12 @@ app.post('/profile', ensureAuthenticated, async (req, res) => {
   const { firstName, lastName, phone, address, emailOptIn, smsOptIn } = req.body;
   await prisma.user.update({
     where: { id: req.user.id },
-    data: {
-      firstName,
-      lastName,
-      phone,
-      address,
-      emailOptIn: !!emailOptIn,
-      smsOptIn: !!smsOptIn
-    }
+    data: { firstName, lastName, phone, address, emailOptIn: !!emailOptIn, smsOptIn: !!smsOptIn }
   });
   res.redirect('/profile');
 });
 
-// Admin area
+// Admin
 app.get('/admin', ensureAdmin, async (req, res) => {
   const [users, events, categories] = await Promise.all([
     prisma.user.findMany(),
@@ -167,7 +157,7 @@ app.get('/admin', ensureAdmin, async (req, res) => {
   res.render('admin', { users, events, categories });
 });
 
-// Basic admin actions (expand later)
+// Admin actions
 app.post('/admin/event', ensureAdmin, async (req, res) => {
   const { title, description, dateTime, graphicUrl } = req.body;
   await prisma.event.create({
@@ -184,7 +174,7 @@ app.post('/admin/event', ensureAdmin, async (req, res) => {
 
 app.post('/admin/category', ensureAdmin, async (req, res) => {
   await prisma.forumCategory.create({
-    data: { name: req.body.name, description: req.body.description }
+    data: { name: req.body.name, description: req.body.description || '' }
   });
   res.redirect('/admin');
 });
@@ -202,15 +192,14 @@ app.post('/community/post', ensureAuthenticated, async (req, res) => {
   res.redirect('/community');
 });
 
-// Catch-all 404 handler – must be last route
+// 404 handler – must be last
 app.use((req, res) => {
   res.status(404).render('404');
 });
 
-const PORT = process.env.PORT || 3000;
-
+const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
 
 process.on('SIGTERM', async () => {
