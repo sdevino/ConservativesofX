@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  email          String    @unique
+  phone          String?
+  dateOfBirth    DateTime?
+  address        String?
+  profilePicture String?   // Azure Blob Storage URL or external URL
+  password       String?   // null for OAuth-only users
+  isAdmin        Boolean   @default(false)
+  isModerator    Boolean   @default(false)
+  emailOptIn     Boolean   @default(false)
+  smsOptIn       Boolean   @default(false)
+  provider       String?   // "google", "local", etc.
+  providerId     String?   @unique
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  createdEvents  Event[]
+  posts          Post[]
+
+  @@index([email])
+  @@index([provider, providerId])
+}
+
+model Event {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String    @db.Text
+  dateTime    DateTime
+  graphicUrl  String?   // Azure Blob URL
+  createdById Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  createdBy   User      @relation(fields: [createdById], references: [id])
+}
+
+model ForumCategory {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  posts       Post[]
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  title       String?
+  content     String    @db.Text
+  authorId    Int
+  categoryId  Int
+  parentId    Int?      // for replies
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  author      User          @relation(fields: [authorId], references: [id])
+  category    ForumCategory @relation(fields: [categoryId], references: [id])
+  parent      Post?         @relation("Replies", fields: [parentId], references: [id])
+  replies     Post[]        @relation("Replies")
+}

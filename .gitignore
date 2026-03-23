@@ -1,0 +1,107 @@
+# Node.js / npm / yarn
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json     # optional: keep if you want exact lockfile; remove if preferring yarn/pnpm
+yarn.lock             # optional: same as above
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+prisma/migrations/
+*.sqlite
+*.sqlite-journal
+
+# Build / dist output (if you ever add client-side bundling)
+dist/
+build/
+out/
+
+# Logs & temp files
+logs/
+*.log
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# Editor / IDE files
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+__MACOSX/
+
+# Windows
+ehthumbs.db
+Desktop.ini
+
+# Azure / deployment artifacts
+.azure/
+App_Data/
+site/
+wwwroot/
+*.PublishSettings
+*.pubxml
+*.deployproj
+*.azurePubxml
+
+# Testing / coverage
+coverage/
+.nyc_output/
+
+# Optional: keep large binaries / media out of git
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.jpg
+*.png
+*.gif
+*.webp
+*.mp4
+*.mov
+
+# Keep only what's needed in git
+# (uncomment if you want to ignore everything except source code)
+/*
+!/prisma/
+/!src/
+/!views/
+/!config/
+/!public/
+/!package.json
+!/package-lock.json
+!/server.js
+!/*.js
+!/*.ejs
+!/*.prisma
+!/*.md
+!/.gitignore
