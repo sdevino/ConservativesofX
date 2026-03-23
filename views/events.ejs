@@ -1,0 +1,29 @@
+<%- include('layout') %>
+
+<div class="max-w-7xl mx-auto px-6 py-12">
+  <h1 class="text-4xl font-bold mb-10 text-center">Upcoming Events</h1>
+
+  <% if (events.length === 0) { %>
+    <p class="text-center text-gray-600 text-xl">No upcoming events scheduled.</p>
+  <% } else { %>
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <% events.forEach(event => { %>
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <% if (event.graphicUrl) { %>
+            <img src="<%= event.graphicUrl %>" alt="<%= event.title %>" class="w-full h-48 object-cover"/>
+          <% } %>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2"><%= event.title %></h3>
+            <p class="text-gray-600 mb-4 line-clamp-3"><%= event.description %></p>
+            <p class="text-sm text-gray-500 font-medium">
+              <%= new Date(event.dateTime).toLocaleString('en-US', {
+                weekday: 'long', month: 'long', day: 'numeric',
+                year: 'numeric', hour: 'numeric', minute: '2-digit'
+              }) %>
+            </p>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

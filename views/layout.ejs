@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Conservatives of X</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+  <header class="bg-white shadow sticky top-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <a href="/" class="text-2xl font-bold text-red-700">Conservatives of X</a>
+      <div class="space-x-6">
+        <a href="/" class="hover:text-red-600">Home</a>
+        <a href="/about" class="hover:text-red-600">About</a>
+        <a href="/events" class="hover:text-red-600">Events</a>
+        <a href="/community" class="hover:text-red-600">Community</a>
+        <a href="/donate" class="hover:text-red-600">Donate</a>
+        <a href="/contact" class="hover:text-red-600">Contact</a>
+        <% if (user) { %>
+          <a href="/profile" class="hover:text-red-600">Profile</a>
+          <% if (user.isAdmin) { %>
+            <a href="/admin" class="hover:text-red-600 font-semibold">Admin</a>
+          <% } %>
+          <a href="/logout" class="text-red-600 hover:underline">Logout</a>
+        <% } else { %>
+          <a href="/login" class="hover:text-red-600">Login</a>
+          <a href="/signup" class="bg-red-600 text-white px-5 py-2 rounded-md hover:bg-red-700">Sign Up</a>
+        <% } %>
+      </div>
+    </nav>
+  </header>
+
+  <main class="flex-grow">
+    <%- body %>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-8 text-center">
+    <p>© <%= new Date().getFullYear() %> Conservatives of X</p>
+  </footer>
+</body>
+</html>

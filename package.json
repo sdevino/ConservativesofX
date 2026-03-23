@@ -1,0 +1,35 @@
+{
+  "name": "conservatives-of-x",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push"
+  },
+  "engines": { "node": "^24.0.0" },
+  "dependencies": {
+    "@azure/communication-email": "^1.1.0",
+    "@azure/communication-sms": "^1.1.0",
+    "@azure/storage-blob": "^12.17.0",
+    "@prisma/client": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.0",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.1.0",
+    "multer": "^2.1.1",
+    "passport": "^0.7.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0",
+    "@superfaceai/passport-twitter-oauth2": "^1.2.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "prisma": "^5.0.0"
+  }
+}
