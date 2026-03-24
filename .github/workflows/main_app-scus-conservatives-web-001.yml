@@ -43,7 +43,7 @@ jobs:
 
       - name: Create deployment package (includes node_modules)
         run: |
-          zip -r deploy.zip . -x "*.git*" "*/node_modules/.cache/*" "*.env*" "README.md"
+          zip -r deploy.zip . -x "*.git*" "*/node_modules/.cache/*" "*.env*" "README.md" ".github/*" ".vscode/*"
 
       # Alternative: Use publish-profile if you prefer (store as secret AZURE_WEBAPP_PUBLISH_PROFILE)
       - name: Deploy to Azure Web App
