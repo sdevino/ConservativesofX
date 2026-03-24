@@ -14,7 +14,7 @@ const { DefaultAzureCredential } = require('@azure/identity');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // Security & middleware
 app.use(helmet());

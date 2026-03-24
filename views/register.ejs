@@ -1,14 +1,44 @@
-<%- include('layout') %>
-<h1>Register</h1>
-<form method="POST" enctype="multipart/form-data">
-  <input type="email" name="email" placeholder="Email" required>
-  <input type="password" name="password" placeholder="Password" required>
-  <input type="text" name="first_name" placeholder="First Name" required>
-  <input type="text" name="last_name" placeholder="Last Name" required>
-  <input type="date" name="date_of_birth" required>
-  <input type="text" name="mailing_address" placeholder="Mailing Address (optional)">
-  <input type="file" name="profile_photo" accept="image/*">
-  <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
-  <button type="submit">Register</button>
+<h1 class="mb-4">Register New Member</h1>
+
+<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+    <div class="alert alert-danger">
+        <% errors.forEach(err => { %>
+            <div><%= err.msg %></div>
+        <% }); %>
+    </div>
+<% } %>
+
+<form method="POST" enctype="multipart/form-data" class="row g-3">
+    <div class="col-md-6">
+        <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+    </div>
+    <div class="col-md-6">
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
+    </div>
+    <div class="col-md-6">
+        <input type="text" name="first_name" class="form-control" placeholder="First Name" required>
+    </div>
+    <div class="col-md-6">
+        <input type="text" name="last_name" class="form-control" placeholder="Last Name" required>
+    </div>
+    <div class="col-md-6">
+        <input type="date" name="date_of_birth" class="form-control" required>
+    </div>
+    <div class="col-12">
+        <input type="text" name="mailing_address" class="form-control" placeholder="Mailing Address (optional)">
+    </div>
+    <div class="col-12">
+        <label class="form-label">Profile Photo (optional)</label>
+        <input type="file" name="profile_photo" class="form-control" accept="image/*">
+    </div>
+    
+    <div class="col-12">
+        <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+    </div>
 </form>
+
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
