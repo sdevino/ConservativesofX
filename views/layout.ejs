@@ -1,112 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth" data-theme="system">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Conservatives of X</title>
-  <link rel="stylesheet" href="/css/output.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  
-  <script>
-    // Theme logic – runs immediately
-    (function() {
-      const savedTheme = localStorage.getItem('theme') || 'system';
-      const html = document.documentElement;
-      
-      function applyTheme(theme) {
-        if (theme === 'dark' || 
-            (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          html.classList.add('dark');
-        } else {
-          html.classList.remove('dark');
-        }
-        html.setAttribute('data-theme', theme);
-      }
-
-      applyTheme(savedTheme);
-
-      // Listen for system preference changes
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        if (localStorage.getItem('theme') === 'system') {
-          applyTheme('system');
-        }
-      });
-
-      // Expose toggle globally so button can call it
-      window.toggleTheme = function() {
-        let current = localStorage.getItem('theme') || 'system';
-        let next;
-        if (current === 'light') next = 'dark';
-        else if (current === 'dark') next = 'system';
-        else next = 'light';  // system → light
-
-        localStorage.setItem('theme', next);
-        applyTheme(next);
-      };
-    })();
-  </script>
+  <meta charset="UTF-8">
+  <title>X Conservatives United</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <%- include('partials/head') %> <!-- if you want -->
 </head>
-<body class="min-h-screen flex flex-col transition-colors duration-300">
-  <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-      <a href="/" class="text-2xl font-bold text-red-600 dark:text-red-500">Conservatives of X</a>
-      
-      <div class="flex items-center space-x-6">
-        <div class="hidden md:flex space-x-6 text-sm font-medium">
-          <a href="/" class="hover:text-red-600 dark:hover:text-red-400 transition">Home</a>
-          <a href="/about" class="hover:text-red-600 dark:hover:text-red-400 transition">About</a>
-          <a href="/events" class="hover:text-red-600 dark:hover:text-red-400 transition">Events</a>
-          <a href="/community" class="hover:text-red-600 dark:hover:text-red-400 transition">Community</a>
-          <a href="/donate" class="hover:text-red-600 dark:hover:text-red-400 transition">Donate</a>
-          <a href="/contact" class="hover:text-red-600 dark:hover:text-red-400 transition">Contact</a>
-        </div>
-
-        <div class="flex items-center space-x-4">
-          <% if (user) { %>
-            <a href="/profile" class="text-sm font-medium hover:text-red-600 dark:hover:text-red-400"><%= user.firstName %></a>
-            <% if (user.isAdmin) { %>
-              <a href="/admin" class="text-sm font-medium text-red-600 dark:text-red-400">Admin</a>
-            <% } %>
-            <a href="/logout" class="text-sm text-red-600 hover:text-red-800 dark:text-red-400">Logout</a>
-          <% } else { %>
-            <a href="/login" class="text-sm font-medium hover:text-red-600 dark:hover:text-red-400">Login</a>
-            <a href="/signup" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-md text-sm font-medium transition">Sign Up</a>
-          <% } %>
-
-          <!-- Theme Toggle -->
-          <button 
-            onclick="toggleTheme()"
-            class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
-            aria-label="Toggle theme"
-            title="Toggle light/dark/system"
-          >
-            <span class="text-xl" id="theme-icon">⚙️</span>
-          </button>
-        </div>
-      </div>
-    </nav>
-  </header>
-
-  <main class="flex-grow">
-    <%- body %>
-  </main>
-
-  <footer class="bg-slate-950 text-slate-400 py-8 text-center text-sm border-t border-slate-800">
-    <p>&copy; <%= new Date().getFullYear() %> Conservatives of X. All rights reserved.</p>
-  </footer>
-
-  <!-- Update icon after load (in case Alpine didn't run yet) -->
-  <script>
-    function updateThemeIcon() {
-      const theme = localStorage.getItem('theme') || 'system';
-      const icon = document.getElementById('theme-icon');
-      if (icon) {
-        if (theme === 'light') icon.textContent = '☀️';
-        else if (theme === 'dark') icon.textContent = '🌙';
-        else icon.textContent = '⚙️';
-      }
-    }
-    window.addEventListener('load', updateThemeIcon);
-  </script>
+<body>
+  <nav>…</nav>
+  <%- body %>
 </body>
 </html>
