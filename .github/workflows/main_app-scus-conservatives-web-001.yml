@@ -31,19 +31,19 @@ jobs:
         run: |
           npm ci --production --no-audit --prefer-offline
 
-      - name: Set startup command to node app.js
-        run: az webapp config set --name app-scus-conservatives-web-001 --resource-group rg-scus-conservatives-web-001 --startup-file "node app.js"
-
-      - name: Create deployment package (includes node_modules)
-        run: |
-          zip -r deploy.zip . -x "*.git*" "*/node_modules/.cache/*" "*.env*" "README.md"
-
       - name: Login to Azure (OIDC - preferred, no secrets)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C476DDFAA0674F1B9A513DF4C93BA7B1 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_73AC0748DB6F4C5CAE4FFFE28B8C062E }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_895823B8664A4A48B9C68421E9FC8D1D }}
+
+      - name: Set startup command to node app.js
+        run: az webapp config set --name app-scus-conservatives-web-001 --resource-group rg-scus-conservatives-web-001 --startup-file "node app.js"
+
+      - name: Create deployment package (includes node_modules)
+        run: |
+          zip -r deploy.zip . -x "*.git*" "*/node_modules/.cache/*" "*.env*" "README.md"
 
       # Alternative: Use publish-profile if you prefer (store as secret AZURE_WEBAPP_PUBLISH_PROFILE)
       - name: Deploy to Azure Web App
