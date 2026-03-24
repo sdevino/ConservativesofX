@@ -1,65 +1,57 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - app-scus-conservatives-web-001
+name: Build and Deploy to Azure Web App
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write   # For OIDC auth (recommended)
+
+env:
+  AZURE_WEBAPP_NAME: your-app-name-here          # e.g. xcu-webapp-scus
+  AZURE_WEBAPP_PACKAGE_PATH: '.'                 # Root of repo
+
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read #This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
         with:
-          node-version: '24.x'
+          node-version: 24
+          cache: 'npm'                  # Cache npm for faster runs
 
-      - name: npm install, build, and test
+      - name: Install production dependencies
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          npm ci --production --no-audit --prefer-offline
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app
-          path: .
+      - name: Set startup command to node app.js
+        run: az webapp config set --name app-scus-conservatives-web-001 --resource-group rg-scus-conservatives-web-001 --startup-file "node app.js"
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      - name: Create deployment package (includes node_modules)
+        run: |
+          zip -r deploy.zip . -x "*.git*" "*/node_modules/.cache/*" "*.env*" "README.md"
 
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app
-      
-      - name: Login to Azure
+      - name: Login to Azure (OIDC - preferred, no secrets)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C476DDFAA0674F1B9A513DF4C93BA7B1 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_73AC0748DB6F4C5CAE4FFFE28B8C062E }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_895823B8664A4A48B9C68421E9FC8D1D }}
 
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
+      # Alternative: Use publish-profile if you prefer (store as secret AZURE_WEBAPP_PUBLISH_PROFILE)
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'app-scus-conservatives-web-001'
-          slot-name: 'Production'
-          package: .
-          
+          package: deploy.zip
+          # slot-name: production   # uncomment if using slots
+
+      - name: Restart App Service (ensure clean start)
+        run: az webapp restart --name app-scus-conservatives-web-001 --resource-group rg-scus-conservatives-web-001
