@@ -1,12 +1,7 @@
 # Node.js / npm / yarn
 node_modules/
 /node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
 package-lock.json     # optional: keep if you want exact lockfile; remove if preferring yarn/pnpm
-yarn.lock             # optional: same as above
 
 # Environment & secrets
 .env
@@ -15,7 +10,3 @@ yarn.lock             # optional: same as above
 .env.development.local
 .env.test.local
 .env.production.local
-
-public/css/output.css
-prisma/dev.db*
-prisma/migrations/
