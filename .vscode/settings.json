@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/3f3a6424-d721-44bd-9c19-93c3f87e2991/resourceGroups/rg-scus-conservatives-web-001/providers/Microsoft.Web/sites/app-scus-conservatives-web-001",
+    "appService.deploySubpath": "."
+}
