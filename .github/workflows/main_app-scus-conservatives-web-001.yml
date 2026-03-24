@@ -10,7 +10,7 @@ permissions:
   id-token: write   # For OIDC auth (recommended)
 
 env:
-  AZURE_WEBAPP_NAME: your-app-name-here          # e.g. xcu-webapp-scus
+  AZURE_WEBAPP_NAME: app-scus-conservatives-web-001         # e.g. xcu-webapp-scus
   AZURE_WEBAPP_PACKAGE_PATH: '.'                 # Root of repo
 
 jobs:
