@@ -138,4 +138,6 @@ app.post('/admin/edit/:id', verifyToken, verifyAdmin, upload.single('profile_pho
   res.redirect('/admin');
 });
 
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT} – ready for Azure App Service`));
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT} – ready for Azure App Service`);
+});
