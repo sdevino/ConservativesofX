@@ -30,7 +30,7 @@ jobs:
       - name: Install production dependencies
         run: npm ci --production --no-audit --prefer-offline || npm install --production --no-audit --prefer-offline
 
-      - name: Create deployment package (EXPLICITLY include public/css)
+      - name: Create deployment package
         run: |
           zip -r deploy.zip . \
             -x "*.git*" \
@@ -42,10 +42,11 @@ jobs:
                ".vscode/**" \
                "**/__MACOSX/**"
 
-      - name: Verify package contents (important debug step)
+      - name: Verify package contents (Critical Check)
         run: |
-          echo "=== Files in deploy.zip ==="
-          unzip -l deploy.zip | grep -E "(package.json|app.js|public/css/style.css|views/layout.ejs)"
+          echo "=== Files included in deploy.zip ==="
+          unzip -l deploy.zip | grep -E "(package.json|app.js|public/style.css|views/layout.ejs|views/home.ejs)"
+          echo "============================================"
 
       - name: Login to Azure
         uses: azure/login@v2
