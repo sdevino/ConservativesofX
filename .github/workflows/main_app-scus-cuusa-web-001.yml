@@ -11,7 +11,7 @@ permissions:
 
 env:
   AZURE_WEBAPP_NAME: app-scus-cuusa-web-001
-  AZURE_RESOURCE_GROUP: rg-scus-cuusa-web               # ← CHANGE THIS IF YOUR RG NAME IS DIFFERENT
+  AZURE_RESOURCE_GROUP: rg-scus-cuusa-web-001
 
 jobs:
   build-and-deploy:
@@ -60,5 +60,5 @@ jobs:
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
-      - name: Show deployment status
-        run: echo "✅ Deployment completed successfully to app-scus-cuusa-web-001"
+      - name: Deployment complete
+        run: echo "✅ Successfully deployed to app-scus-cuusa-web-001"
