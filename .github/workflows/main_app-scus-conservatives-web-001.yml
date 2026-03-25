@@ -10,7 +10,7 @@ permissions:
   id-token: write   # For OIDC auth (recommended)
 
 env:
-  AZURE_WEBAPP_NAME: app-scus-conservatives-web-001         # e.g. xcu-webapp-scus
+  AZURE_WEBAPP_NAME: app-scus-cuusa-web-001         # e.g. xcu-webapp-scus
   AZURE_WEBAPP_PACKAGE_PATH: '.'                 # Root of repo
 
 jobs:
@@ -34,12 +34,12 @@ jobs:
       - name: Login to Azure (OIDC - preferred, no secrets)
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C476DDFAA0674F1B9A513DF4C93BA7B1 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_73AC0748DB6F4C5CAE4FFFE28B8C062E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_895823B8664A4A48B9C68421E9FC8D1D }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_48CB96D8FD9D41B6BB8D0F2975C51DAC }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5D08DD9B6251433F9A89FA707502C253 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_015A1106D1A148A081EE39158055B1BF }}
 
       - name: Set startup command to node app.js
-        run: az webapp config set --name app-scus-conservatives-web-001 --resource-group rg-scus-conservatives-web-001 --startup-file "node app.js"
+        run: az webapp config set --name app-scus-cuusa-web-001--resource-group rg-scus-cuusa-web-001 --startup-file "node app.js"
 
       - name: Create deployment package (includes node_modules)
         run: |
@@ -49,9 +49,9 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'app-scus-conservatives-web-001'
+          app-name: app-scus-cuusa-web-001
           package: deploy.zip
           # slot-name: production   # uncomment if using slots
 
       - name: Restart App Service (ensure clean start)
-        run: az webapp restart --name app-scus-conservatives-web-001 --resource-group rg-scus-conservatives-web-001
+        run: az webapp restart --name app-scus-cuusa-web-001 --resource-group rg-scus-cuusa-web-001
