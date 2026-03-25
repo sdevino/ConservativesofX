@@ -39,12 +39,11 @@ jobs:
                "*.env*" \
                "README.md" \
                ".github/**" \
-               ".vscode/**" \
-               "**/__MACOSX/**"
+               ".vscode/**"
 
-      - name: Verify package contents (Critical Check)
+      - name: Verify package contents
         run: |
-          echo "=== Files included in deploy.zip ==="
+          echo "=== Files in deploy.zip ==="
           unzip -l deploy.zip | grep -E "(package.json|app.js|public/style.css|views/layout.ejs|views/home.ejs)"
           echo "============================================"
 
@@ -55,15 +54,24 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5D08DD9B6251433F9A89FA707502C253 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_015A1106D1A148A081EE39158055B1BF }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy package to Azure
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: deploy.zip
           slot-name: production
 
-      - name: Restart Web App
+      - name: Force clean old package and restart
         run: |
-          az webapp restart \
+          echo "Cleaning old package cache..."
+          az webapp config appsettings set \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+            --settings WEBSITE_RUN_FROM_PACKAGE=1
+
+          az webapp restart \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_WEBAPP_NAME }}
+
+      - name: Deployment Status
+        run: echo "✅ Deployment completed. Check Log stream for new files."
