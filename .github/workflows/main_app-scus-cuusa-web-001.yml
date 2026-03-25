@@ -1,14 +1,13 @@
-name: Build and Deploy to Azure Web App
+name: Deploy to Azure Web App
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
-# This is required for OIDC authentication with Azure
 permissions:
   contents: read
-  id-token: write     # ← This line was missing or incorrect
+  id-token: write
 
 env:
   AZURE_WEBAPP_NAME: app-scus-cuusa-web-001
@@ -19,36 +18,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js 24.x
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - name: Install production dependencies
-        run: npm ci --production --no-audit
+      - run: npm ci --production
 
-      - name: Create deployment package
-        run: |
-          zip -r deploy.zip . \
-            -x "*.git*" "**/.git/**" "**/node_modules/.cache/**" "*.env*" "README.md" ".github/**" ".vscode/**"
+      - run: zip -r deploy.zip . -x "*.git*" "**/.git/**" "*.env*" "README.md" ".github/**"
 
-      - name: Verify package contents
-        run: |
-          echo "=== Files in deploy.zip ==="
-          unzip -l deploy.zip | grep -E "(package.json|app.js|public/style.css|views/layout.ejs)"
-          echo "============================================"
-
-      - name: Login to Azure (OIDC)
-        uses: azure/login@v2
+      - uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_48CB96D8FD9D41B6BB8D0F2975C51DAC }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5D08DD9B6251433F9A89FA707502C253 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_015A1106D1A148A081EE39158055B1BF }}
 
-      - name: Deploy zip package to Azure
+      - name: Deploy & Force New Package
         run: |
           az webapp deploy \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
@@ -57,6 +43,4 @@ jobs:
             --type zip \
             --clean true
 
-          az webapp restart \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --name ${{ env.AZURE_WEBAPP_NAME }}
+          az webapp restart --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }}
