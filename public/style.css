@@ -7,8 +7,6 @@
     --border: #e0e0e0;
 }
 
-/* comment */
-
 [data-theme="dark"] {
     --primary: #4d9fff;
     --primary-dark: #3a7acc;
