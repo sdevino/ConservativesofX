@@ -30,17 +30,24 @@ jobs:
       - name: Install production dependencies
         run: npm ci --production --no-audit --prefer-offline || npm install --production --no-audit --prefer-offline
 
-      - name: Create deployment package (includes node_modules + public)
+      - name: Create deployment package (EXPLICITLY include public/css)
         run: |
           zip -r deploy.zip . \
             -x "*.git*" \
-               "*/node_modules/.cache/*" \
+               "**/.git/**" \
+               "**/node_modules/.cache/**" \
                "*.env*" \
                "README.md" \
-               ".github/*" \
-               ".vscode/*"
+               ".github/**" \
+               ".vscode/**" \
+               "**/__MACOSX/**"
 
-      - name: Login to Azure using Service Connection
+      - name: Verify package contents (important debug step)
+        run: |
+          echo "=== Files in deploy.zip ==="
+          unzip -l deploy.zip | grep -E "(package.json|app.js|public/css/style.css|views/layout.ejs)"
+
+      - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_48CB96D8FD9D41B6BB8D0F2975C51DAC }}
@@ -59,6 +66,3 @@ jobs:
           az webapp restart \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
-
-      - name: Deployment complete
-        run: echo "✅ Successfully deployed to app-scus-cuusa-web-001"
