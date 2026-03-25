@@ -5,41 +5,27 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  id-token: write
-
 env:
   AZURE_WEBAPP_NAME: app-scus-cuusa-web-001
   AZURE_RESOURCE_GROUP: rg-scus-cuusa-web-001
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js 24.x
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
 
-      - name: Install production dependencies
-        run: npm ci --production --no-audit --prefer-offline || npm install --production --no-audit --prefer-offline
+      - name: Install dependencies
+        run: npm ci --production
 
-      - name: Create deployment package
-        run: |
-          zip -r deploy.zip . \
-            -x "*.git*" "**/.git/**" "**/node_modules/.cache/**" "*.env*" "README.md" ".github/**" ".vscode/**"
-
-      - name: Verify package contents
-        run: |
-          echo "=== Files in deploy.zip ==="
-          unzip -l deploy.zip | grep -E "(package.json|app.js|public/style.css|views/layout.ejs)"
-          echo "============================================"
+      - name: Create zip package
+        run: zip -r deploy.zip . -x "*.git*" "**/.git/**" "*.env*" "README.md" ".github/**"
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -48,22 +34,13 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5D08DD9B6251433F9A89FA707502C253 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_015A1106D1A148A081EE39158055B1BF }}
 
-      - name: Deploy and Force New Package
+      - name: Deploy zip package
         run: |
-          # Upload the new zip
           az webapp deploy \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --src-path deploy.zip \
-            --type zip
+            --type zip \
+            --clean true
 
-          # Force App Service to use the new package
-          az webapp config appsettings set \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --settings WEBSITE_RUN_FROM_PACKAGE=1
-
-          # Restart to pick up the new package
-          az webapp restart \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --name ${{ env.AZURE_WEBAPP_NAME }}
+          az webapp restart --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }}
